@@ -14,6 +14,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         print("Hello world for branch to merge")
         print("Тут добавим ещё текста")
         print("Тест работы с GitHub")
+        print("Вновь добавляю текста, только в тестВетку-свою")
         return true
     }
 
