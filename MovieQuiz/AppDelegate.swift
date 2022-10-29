@@ -13,6 +13,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         print("Hello world for branch to merge")
         print("Тут добавим ещё текста")
+        print("Тест работы с GitHub")
         return true
     }
 
