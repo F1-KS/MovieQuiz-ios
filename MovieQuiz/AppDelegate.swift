@@ -15,6 +15,7 @@ final class AppDelegate: UIResponder, UIApplicationDelegate {
         print("Тут добавим ещё текста")
         print("Тест работы с GitHub")
         print("Вновь добавляю текста, только в тестВетку-свою")
+        print("Add information others in testBranch-self")
         return true
     }
 
