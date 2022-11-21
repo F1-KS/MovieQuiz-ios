@@ -48,6 +48,11 @@
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="T6l-AN-2f5" secondAttribute="height" multiplier="2:3" id="ovt-3L-FNM"/>
                                         </constraints>
+                                        <userDefinedRuntimeAttributes>
+                                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                                <integer key="value" value="20"/>
+                                            </userDefinedRuntimeAttribute>
+                                        </userDefinedRuntimeAttributes>
                                     </imageView>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sxE-Eq-DcW">
                                         <rect key="frame" x="0.0" y="566.33333333333337" width="335" height="77.666666666666629"/>
@@ -87,6 +92,9 @@
                                                         <integer key="value" value="15"/>
                                                     </userDefinedRuntimeAttribute>
                                                 </userDefinedRuntimeAttributes>
+                                                <connections>
+                                                    <action selector="noButtonClicked:" destination="BYZ-38-t0r" eventType="touchUpInside" id="utC-rk-0es"/>
+                                                </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kkg-Qq-5nd" userLabel="Yes button">
                                                 <rect key="frame" x="177.66666666666663" y="0.0" width="157.33333333333337" height="60"/>
@@ -103,6 +111,9 @@
                                                         <integer key="value" value="15"/>
                                                     </userDefinedRuntimeAttribute>
                                                 </userDefinedRuntimeAttributes>
+                                                <connections>
+                                                    <action selector="yesButtonClicked:" destination="BYZ-38-t0r" eventType="touchUpInside" id="4fD-mR-PJy"/>
+                                                </connections>
                                             </button>
                                         </subviews>
                                         <constraints>
@@ -122,6 +133,13 @@
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="2sd-aM-Yun" secondAttribute="trailing" constant="20" id="gO1-9s-rcI"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="counterLabel" destination="dBo-K5-N14" id="fM1-jA-M4h"/>
+                        <outlet property="imageView" destination="T6l-AN-2f5" id="D5e-aL-qgB"/>
+                        <outlet property="noButton" destination="wI4-vS-PNE" id="WGt-HE-gts"/>
+                        <outlet property="textLabel" destination="mHR-dF-pWV" id="9ev-Kl-AC4"/>
+                        <outlet property="yesButton" destination="kkg-Qq-5nd" id="ljv-DX-xKe"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
