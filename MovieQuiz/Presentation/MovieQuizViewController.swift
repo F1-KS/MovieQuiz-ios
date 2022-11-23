@@ -55,7 +55,6 @@ final class MovieQuizViewController: UIViewController {
     
     
     private func convert(model: QuizQuestion) -> QuizStepViewModel {
-        // Попробуйте написать код конвертации сами
         return QuizStepViewModel(
             image: UIImage(named: model.image) ?? UIImage(), // распаковываем картинку
             question: model.text, // берём текст вопроса
@@ -80,7 +79,7 @@ final class MovieQuizViewController: UIViewController {
         
         // создаём для него кнопки с действиями
         let action = UIAlertAction(title: result.buttonText, style: .default, handler: {_ in
-            self.currentQuestionIndex = 0 // вот этот код с переключением индекса и показом первого вопроса надо будет написать тут
+            self.currentQuestionIndex = 0 // вот этот код с переключением индекса и показом первого вопроса
             
             // скидываем счётчик правильных ответов
             self.correctAnswers = 0
@@ -105,22 +104,21 @@ final class MovieQuizViewController: UIViewController {
     }
     
     private func showAnswerResult(isCorrect: Bool) {
-        // попробуйте написать код, который будет показывать красную или зелёную рамку
+        // это код, который будет показывать красную или зелёную рамку
         // исходя из правильности ответа, то есть переменной `isCorrect`.
         if isCorrect {
             correctAnswers += 1
         }
-        // цвета можно найти в папке Helpers файле UIColor+Extensions нашего проекта
+        // цвета из папки Helpers файле UIColor+Extensions
         imageView.layer.masksToBounds = true // даём разрешение на рисование рамки
         imageView.layer.borderWidth = 8 // толщина рамки
         imageView.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor //если True то делаем рамку зеленой иначе красной
-        //imageView.layer.cornerRadius = 20 // радиус скругления углов рамки 20
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { // запускаем задачу через 1 секунду
             // код, который вы хотите вызвать через 1 секунду,
             // в нашем случае это просто функция showNextQuestionOrResults()
             self.showNextQuestionOrResults()
-            
+
         }
     }
     
