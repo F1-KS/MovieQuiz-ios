@@ -106,6 +106,8 @@ final class MovieQuizViewController: UIViewController {
     private func showAnswerResult(isCorrect: Bool) {
         // это код, который будет показывать красную или зелёную рамку
         // исходя из правильности ответа, то есть переменной `isCorrect`.
+        yesButton.isEnabled = false
+        noButton.isEnabled = false
         if isCorrect {
             correctAnswers += 1
         }
@@ -118,6 +120,8 @@ final class MovieQuizViewController: UIViewController {
             // код, который вы хотите вызвать через 1 секунду,
             // в нашем случае это просто функция showNextQuestionOrResults()
             self.showNextQuestionOrResults()
+            self.yesButton.isEnabled = true
+            self.noButton.isEnabled = true
 
         }
     }
