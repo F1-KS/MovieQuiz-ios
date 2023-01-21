@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 
 final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
-
+    
     
     // MARK: - Делегейт
     
@@ -25,7 +25,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         // при первом запуске приложения чтобы не было пустого экрана imageView (пока не отработает функция нажатии кнопок ДА или Нет), подключим стек и отобразим его
         questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
         alertPresenter = AlertPresenter(controller: self)
-        alertErrorNetwork = AlertNetworkError(controllerError: self)
+        alertErrorNetwork = AlertNetworkError(controller: self)
         questionFactory?.loadData()
         statisticService = StatisticServiceImplementation()
         showLoadingIndicator()
@@ -112,7 +112,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             self.showNextQuestionOrResults()
         }
     }
-      
+    
     private func showNextQuestionOrResults() {
         // - 1 потому что индекс начинается с 0, а длинна массива — с 1
         // показать результат квиза
@@ -145,25 +145,25 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         }
     }
     
-    internal func didLoadDataFromServer() {
+    func didLoadDataFromServer() {
         activityIndicator.isHidden = true // скрываем индикатор загрузки
         questionFactory?.requestNextQuestion()
     }
-
-    internal func didFailToLoadData(with error: Error) {
+    
+    func didFailToLoadData(with error: Error) {
         showNetworkError(message: error.localizedDescription) // возьмём в качестве сообщения описание ошибки
     }
-        
+    
     private func showLoadingIndicator() {
         activityIndicator.isHidden = false // говорим, что индикатор загрузки не скрыт
         activityIndicator.startAnimating() // включаем анимацию
-    } 
-
+    }
+    
     private func hideLoadingIndicator() {
         activityIndicator.isHidden = true // говорим, что индикатор загрузки скрыт
         activityIndicator.stopAnimating() // выключаем анимацию
     }
-   
+    
     // Показываем ошибку сети
     private func showNetworkError(message: String) {
         hideLoadingIndicator()

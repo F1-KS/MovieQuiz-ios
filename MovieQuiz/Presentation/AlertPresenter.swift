@@ -33,11 +33,11 @@ protocol AlertNetworkErrorProtocol {
     func showErrorAlert(alertResult: ErrorAlertModel)
 }
 
-class AlertNetworkError: AlertNetworkErrorProtocol {
-    private weak var controllerError: UIViewController?
+final class AlertNetworkError: AlertNetworkErrorProtocol {
+    private weak var controller: UIViewController?
     
-    init(controllerError: UIViewController) {
-        self.controllerError = controllerError
+    init(controller: UIViewController) {
+        self.controller = controller
     }
     
     func showErrorAlert(alertResult: ErrorAlertModel) {
@@ -51,6 +51,6 @@ class AlertNetworkError: AlertNetworkErrorProtocol {
             handler: { _ in alertResult.completion() }
         )
         alertError.addAction(action)
-        controllerError?.present(alertError, animated: true, completion: nil)
+        controller?.present(alertError, animated: true, completion: nil)
     }
 }
