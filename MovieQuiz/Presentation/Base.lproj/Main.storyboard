@@ -63,7 +63,7 @@
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sxE-Eq-DcW">
                                         <rect key="frame" x="0.0" y="566.33333333333337" width="335" height="74.666666666666629"/>
                                         <subviews>
-                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Рейтинг этого фильма меньше, чем 5?" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mHR-dF-pWV" userLabel="Question Label">
+                                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="mHR-dF-pWV" userLabel="Question Label">
                                                 <rect key="frame" x="-0.17967599410690127" y="1.1368683772161603e-13" width="335.00000000000011" height="77.666666666666629"/>
                                                 <color key="backgroundColor" name="Black"/>
                                                 <color key="tintColor" name="Black"/>
