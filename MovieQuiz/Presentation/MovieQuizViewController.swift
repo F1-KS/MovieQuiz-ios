@@ -89,6 +89,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         imageView.image = step.image
         textLabel.text = step.question
         counterLabel.text = step.questionNumber
+        imageView.layer.borderColor = nil //корректный сброс цвета обводки imageView - вместо функции resetAnswerResult() {imageView.layer.borderColor = UIColor.clear.cgColor}
     }
     
     private func showAnswerResult(isCorrect: Bool) {
@@ -108,15 +109,10 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             // в нашем случае это просто функция showNextQuestionOrResults()
             self.yesButton.isEnabled = true
             self.noButton.isEnabled = true
-            self.resetAnswerResult() // сбрасываем цвет обводки imageView
             self.showNextQuestionOrResults()
         }
     }
-    
-    private func resetAnswerResult() { //функция сброса цвета обводки imageView
-        imageView.layer.borderColor = UIColor.clear.cgColor
-    }
-    
+      
     private func showNextQuestionOrResults() {
         // - 1 потому что индекс начинается с 0, а длинна массива — с 1
         // показать результат квиза
