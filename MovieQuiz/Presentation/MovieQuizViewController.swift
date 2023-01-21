@@ -3,9 +3,10 @@ import UIKit
 
 final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     
+    
     // MARK: - Делегейт
     
-    func didRecieveNextQuestion(question: QuizQuestion?) {
+    func didReceiveNextQuestion(question: QuizQuestion?) {
         guard let question = question else {
             return
         }
@@ -22,10 +23,12 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         // при первом запуске приложения чтобы не было пустого экрана imageView (пока не отработает функция нажатии кнопок ДА или Нет), подключим стек и отобразим его
-        questionFactory = QuestionFactory(delegate: self)
+        questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
         alertPresenter = AlertPresenter(controller: self)
-        questionFactory?.requestNextQuestion()
+        alertErrorNetwork = AlertNetworkError(controller: self)
+        questionFactory?.loadData()
         statisticService = StatisticServiceImplementation()
+        showLoadingIndicator()
     }
     
     // MARK: - Привязка пользовательского интерфейса
@@ -35,6 +38,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     @IBOutlet private weak var yesButton: UIButton!
     @IBOutlet private weak var noButton: UIButton!
     @IBOutlet private weak var imageView: UIImageView!
+    @IBOutlet private weak var activityIndicator: UIActivityIndicatorView!
     
     //Обработка ответа от пользователя
     
@@ -69,12 +73,13 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     private var questionFactory: QuestionFactoryProtocol?
     private var alertPresenter: AlertPresenterProtocol?
     private var statisticService: StatisticService?
+    private var alertErrorNetwork: AlertNetworkErrorProtocol?
     
     // MARK: - Функции
     
     private func convert(model: QuizQuestion) -> QuizStepViewModel {
         return QuizStepViewModel(
-            image: UIImage(named: model.image) ?? UIImage(), // распаковываем картинку
+            image: UIImage(data: model.image) ?? UIImage(), // распаковываем картинку
             question: model.text, // берём текст вопроса
             questionNumber: "\(currentQuestionIndex + 1)/\(questionsAmount)") // высчитываем номер вопроса
     }
@@ -84,6 +89,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         imageView.image = step.image
         textLabel.text = step.question
         counterLabel.text = step.questionNumber
+        imageView.layer.borderColor = nil //корректный сброс цвета обводки imageView - вместо функции resetAnswerResult() {imageView.layer.borderColor = UIColor.clear.cgColor}
     }
     
     private func showAnswerResult(isCorrect: Bool) {
@@ -103,13 +109,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             // в нашем случае это просто функция showNextQuestionOrResults()
             self.yesButton.isEnabled = true
             self.noButton.isEnabled = true
-            self.resetAnwserResult() // сбрасываем цвет обводки imageView
             self.showNextQuestionOrResults()
         }
-    }
-    
-    private func resetAnwserResult() { //функция сброса цвета обводки imageView
-        imageView.layer.borderColor = UIColor.clear.cgColor
     }
     
     private func showNextQuestionOrResults() {
@@ -143,6 +144,43 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             questionFactory?.requestNextQuestion()
         }
     }
+    
+    func didLoadDataFromServer() {
+        activityIndicator.isHidden = true // скрываем индикатор загрузки
+        questionFactory?.requestNextQuestion()
+    }
+    
+    func didFailToLoadData(with error: Error) {
+        showNetworkError(message: error.localizedDescription) // возьмём в качестве сообщения описание ошибки
+    }
+    
+    private func showLoadingIndicator() {
+        activityIndicator.isHidden = false // говорим, что индикатор загрузки не скрыт
+        activityIndicator.startAnimating() // включаем анимацию
+    }
+    
+    private func hideLoadingIndicator() {
+        activityIndicator.isHidden = true // говорим, что индикатор загрузки скрыт
+        activityIndicator.stopAnimating() // выключаем анимацию
+    }
+    
+    // Показываем ошибку сети
+    private func showNetworkError(message: String) {
+        hideLoadingIndicator()
+        
+        let model = ErrorAlertModel(errorTitle: "Ошибка",
+                                    errorMessage: message,
+                                    errorButtonText: "Попробовать еще раз") { [weak self] in
+            guard let self = self else {return}
+            
+            self.currentQuestionIndex = 0
+            self.correctAnswers = 0
+            self.questionFactory?.loadData()
+            
+        }
+        alertErrorNetwork?.showErrorAlert(alertResult: model)
+    }
+    
     
     
 }

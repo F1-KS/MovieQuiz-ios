@@ -27,3 +27,30 @@ class AlertPresenter: AlertPresenterProtocol {
         controller?.present(alert, animated: true, completion: nil)
     }
 }
+
+
+protocol AlertNetworkErrorProtocol {
+    func showErrorAlert(alertResult: ErrorAlertModel)
+}
+
+final class AlertNetworkError: AlertNetworkErrorProtocol {
+    private weak var controller: UIViewController?
+    
+    init(controller: UIViewController) {
+        self.controller = controller
+    }
+    
+    func showErrorAlert(alertResult: ErrorAlertModel) {
+        let alertError = UIAlertController(
+            title: alertResult.errorTitle,
+            message: alertResult.errorMessage,
+            preferredStyle: .alert)
+        let action = UIAlertAction(
+            title: "Попробовать ещё раз",
+            style: .default,
+            handler: { _ in alertResult.completion() }
+        )
+        alertError.addAction(action)
+        controller?.present(alertError, animated: true, completion: nil)
+    }
+}
