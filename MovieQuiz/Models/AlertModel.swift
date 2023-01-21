@@ -7,3 +7,11 @@ struct AlertModel {
     var completion: () -> Void
 
 }
+
+struct ErrorAlertModel {
+    let errorTitle: String
+    let errorMessage: String
+    let errorButtonText: String
+    var completion: () -> Void
+
+}
