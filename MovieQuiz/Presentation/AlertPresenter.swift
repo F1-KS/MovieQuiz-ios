@@ -19,7 +19,7 @@ class AlertPresenter: AlertPresenterProtocol {
             message: result.message,
             preferredStyle: .alert)
         let action = UIAlertAction(
-            title: "Сыграть еще раз",
+            title: result.buttonText, //"Сыграть еще раз",
             style: .default,
             handler: { _ in result.completion() }
         )
