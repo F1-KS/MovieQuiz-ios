@@ -104,7 +104,7 @@ class MovieQuizUITests: XCTestCase {
     
     func testAlertRound() {
         sleep(2)
-        for _ in 1...10 {
+        for _ in 1...10 { // нажмем кнопку NO десять раз с интервалом в 2 секунды
             app.buttons["No"].tap()
             sleep(2)
         }
@@ -112,12 +112,12 @@ class MovieQuizUITests: XCTestCase {
 
         XCTAssertTrue(alert.exists) // проверяем существование алерта (Сообщения: alertModel)
         XCTAssertTrue(alert.label == "Этот раунд окончен!") // проверяем имеется ли лайбл с такой надписью
-        XCTAssertTrue(alert.buttons.firstMatch.label == "Сыграть ещё раз") // сравниваем, совпадает ли текст на копке алерта из MovieQuizViewController/alertModel
+        XCTAssertTrue(alert.buttons.firstMatch.label == "Сыграть ещё раз") // сравниваем, совпадает ли текст на кнопке алерта из MovieQuizViewController/alertModel
     }
     
     func testAlertDismiss() {
         sleep(2)
-        for _ in 1...10 {
+        for _ in 1...10 { // нажмем кнопку NO десять раз с интервалом в 2 секунды
             app.buttons["No"].tap()
             sleep(2)
         }
