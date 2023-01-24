@@ -7,15 +7,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     // MARK: - Делегейт
     
     func didReceiveNextQuestion(question: QuizQuestion?) {
-        guard let question = question else {
-            return
-        }
+        presenter.didReceiveNextQuestion(question: question)
         
-        presenter.currentQuestion = question
-        let viewModel = presenter.convert(model: question)
-        DispatchQueue.main.async { [weak self] in
-            self?.show(quiz: viewModel)
-        }
     }
     
     // MARK: - Жизненный цикл
@@ -24,11 +17,11 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         super.viewDidLoad()
         // при первом запуске приложения чтобы не было пустого экрана imageView (пока не отработает функция нажатии кнопок ДА или Нет), подключим стек и отобразим его
         presenter.viewController = self
-        questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
-        alertPresenter = AlertPresenter(controller: self)
+        presenter.questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
+        presenter.alertPresenter = AlertPresenter(controller: self)
         alertErrorNetwork = AlertNetworkError(controller: self)
-        questionFactory?.loadData()
-        statisticService = StatisticServiceImplementation()
+        presenter.questionFactory?.loadData()
+        presenter.statisticService = StatisticServiceImplementation()
         showLoadingIndicator()
     }
     
@@ -44,28 +37,21 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     //Обработка ответа от пользователя
     
     @IBAction private func yesButtonClicked(_ sender: UIButton) {
-        presenter.currentQuestion = presenter.currentQuestion
-        presenter.yesButtonClicked(yesButton)
+        presenter.yesButtonClicked()
     }
     
     @IBAction private func noButtonClicked(_ sender: UIButton) {
-        presenter.currentQuestion = presenter.currentQuestion
-        presenter.noButtonClicked(noButton)
+        presenter.noButtonClicked()
     }
     
     // MARK: - Переменные и константы
     
-    private var correctAnswers: Int = 0
     private let presenter = MovieQuizPresenter()
-//    private var currentQuestion: QuizQuestion?
-    private var questionFactory: QuestionFactoryProtocol?
-    private var alertPresenter: AlertPresenterProtocol?
-    private var statisticService: StatisticService?
     private var alertErrorNetwork: AlertNetworkErrorProtocol?
     
     // MARK: - Функции
     
-    private func show(quiz step: QuizStepViewModel) {
+    func show(quiz step: QuizStepViewModel) {
         // здесь мы заполняем нашу картинку, текст и счётчик данными
         imageView.image = step.image
         textLabel.text = step.question
@@ -78,7 +64,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         // исходя из правильности ответа, то есть переменной `isCorrect`.
         
         if isCorrect {
-            correctAnswers += 1
+            presenter.correctAnswers += 1
         }
         // цвета из папки Helpers файле UIColor+Extensions
         imageView.layer.masksToBounds = true // даём разрешение на рисование рамки
@@ -90,46 +76,13 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             // в нашем случае это просто функция showNextQuestionOrResults()
             self.yesButton.isEnabled = true
             self.noButton.isEnabled = true
-            self.showNextQuestionOrResults()
+            self.presenter.showNextQuestionOrResults()
         }
     }
     
-    private func showNextQuestionOrResults() {
-        // - 1 потому что индекс начинается с 0, а длинна массива — с 1
-        // показать результат квиза
-        if presenter.isLastQuestion() {
-            statisticService?.store(correct: correctAnswers, total: presenter.questionsAmount)
-            guard let gamesCount = statisticService?.gamesCount else {return}
-            guard let bestGame = statisticService?.bestGame else {return}
-            guard let totalAccuracy = statisticService?.totalAccuracy else {return}
-            // три кавычки дают возможность переносить строки без знака \n и делать код более читаемым
-            let text = """
-                Ваш результат: \(correctAnswers)/\(presenter.questionsAmount)
-                Количество сыгранных квизов: \(gamesCount)
-                Рекорд: \(bestGame.correct)/\(bestGame.total) \(bestGame.date.dateTimeString)
-                Средняя точность: \(String(format: "%.2f", totalAccuracy))%
-                """
-            let alertModel = AlertModel(
-                title: "Этот раунд окончен!",
-                message: text,
-                buttonText: "Сыграть ещё раз",
-                completion: {
-                    self.presenter.resetQuestionIndex()
-                    self.correctAnswers = 0
-                    self.questionFactory?.requestNextQuestion()
-                })
-            alertPresenter?.showAlert(result: alertModel)
-        } else {
-            
-            presenter.switchToNextQuestion() // увеличиваем индекс текущего урока на 1; таким образом мы сможем получить следующий урок
-            // показать следующий вопрос
-            questionFactory?.requestNextQuestion()
-        }
-    } // end showNextQuestionOrResults
-    
     func didLoadDataFromServer() {
         activityIndicator.isHidden = true // скрываем индикатор загрузки
-        questionFactory?.requestNextQuestion()
+        presenter.questionFactory?.requestNextQuestion()
     }
     
     func didFailToLoadData(with error: Error) {
@@ -156,8 +109,8 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
             guard let self = self else {return}
             
             self.presenter.resetQuestionIndex()
-            self.correctAnswers = 0
-            self.questionFactory?.loadData()
+            self.presenter.correctAnswers = 0
+            self.presenter.questionFactory?.loadData()
             
         }
         alertErrorNetwork?.showErrorAlert(alertResult: model)
