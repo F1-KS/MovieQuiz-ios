@@ -92,8 +92,8 @@ final class QuestionFactory: QuestionFactoryProtocol {
             
             //Создаём вопрос, определяем его корректность и создаём модель вопроса. Здесь мы решили задать стандартный вопрос «Рейтинг этого фильма больше, чем 7?».
             let rating = Float(movie.rating) ?? 0
-            let text = "Рейтинг этого фильма больше чем 8.5?"
-            let correctAnswer = rating > 8.5
+            let text = "Рейтинг этого фильма больше чем 8.2?"
+            let correctAnswer = rating > 8.2
             let question = QuizQuestion(image: imageData,
                                         text: text,
                                         correctAnswer: correctAnswer)
