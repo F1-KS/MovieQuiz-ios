@@ -1,14 +1,13 @@
 import Foundation
 import UIKit
 
-final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
+final class MovieQuizViewController: UIViewController {
     
     
     // MARK: - Делегейт
     
     func didReceiveNextQuestion(question: QuizQuestion?) {
         presenter.didReceiveNextQuestion(question: question)
-        
     }
     
     // MARK: - Жизненный цикл
@@ -17,9 +16,9 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         super.viewDidLoad()
         // при первом запуске приложения чтобы не было пустого экрана imageView (пока не отработает функция нажатии кнопок ДА или Нет), подключим стек и отобразим его
         presenter.viewController = self
-        presenter.questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
+        presenter.questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: presenter)
         presenter.alertPresenter = AlertPresenter(controller: self)
-        alertErrorNetwork = AlertNetworkError(controller: self)
+        presenter.alertErrorNetwork = AlertNetworkError(controller: self)
         presenter.questionFactory?.loadData()
         presenter.statisticService = StatisticServiceImplementation()
         showLoadingIndicator()
@@ -32,7 +31,7 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     @IBOutlet weak var yesButton: UIButton!
     @IBOutlet weak var noButton: UIButton!
     @IBOutlet weak var imageView: UIImageView!
-    @IBOutlet private weak var activityIndicator: UIActivityIndicatorView!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     //Обработка ответа от пользователя
     
@@ -47,7 +46,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
     // MARK: - Переменные и константы
     
     private let presenter = MovieQuizPresenter()
-    var alertErrorNetwork: AlertNetworkErrorProtocol?
     
     // MARK: - Функции
     
@@ -57,15 +55,6 @@ final class MovieQuizViewController: UIViewController, QuestionFactoryDelegate {
         textLabel.text = step.question
         counterLabel.text = step.questionNumber
         imageView.layer.borderColor = nil //корректный сброс цвета обводки imageView - вместо функции resetAnswerResult() {imageView.layer.borderColor = UIColor.clear.cgColor}
-    }
-    
-    func didLoadDataFromServer() {
-        activityIndicator.isHidden = true // скрываем индикатор загрузки
-        presenter.questionFactory?.requestNextQuestion()
-    }
-    
-    func didFailToLoadData(with error: Error) {
-        presenter.showNetworkError(message: error.localizedDescription) // возьмём в качестве сообщения описание ошибки
     }
     
     private func showLoadingIndicator() {

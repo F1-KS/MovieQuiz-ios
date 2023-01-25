@@ -1,7 +1,7 @@
 import Foundation
 import UIKit
 
-final class MovieQuizPresenter: UIViewController {
+final class MovieQuizPresenter: UIViewController, QuestionFactoryDelegate {
     
     //MARK: - Переменные - константы
     
@@ -13,6 +13,7 @@ final class MovieQuizPresenter: UIViewController {
     var statisticService: StatisticService?
     var questionFactory: QuestionFactoryProtocol?
     var alertPresenter: AlertPresenterProtocol?
+    var alertErrorNetwork: AlertNetworkErrorProtocol?
     
     
     // MARK: -
@@ -26,15 +27,18 @@ final class MovieQuizPresenter: UIViewController {
     }
     
     func yesButtonClicked() {
-        viewController?.yesButton.isEnabled = false
-        viewController?.noButton.isEnabled = false
+        offButtonClicked()
         didAnswer(isYes: true)
     }
     
     func noButtonClicked() {
+        offButtonClicked()
+        didAnswer(isYes: false)
+    }
+    
+    func offButtonClicked() {
         viewController?.yesButton.isEnabled = false
         viewController?.noButton.isEnabled = false
-        didAnswer(isYes: false)
     }
     
     func onButtonClicked() {
@@ -43,6 +47,15 @@ final class MovieQuizPresenter: UIViewController {
     }
     
     // MARK: -
+    
+    func didLoadDataFromServer() {
+        viewController?.activityIndicator.isHidden = true // скрываем индикатор загрузки
+        questionFactory?.requestNextQuestion()
+    }
+    
+    func didFailToLoadData(with error: Error) {
+        showNetworkError(message: error.localizedDescription) // возьмём в качестве сообщения описание ошибки
+    }
     
     func didReceiveNextQuestion(question: QuizQuestion?) {
         guard let question = question else {
@@ -123,7 +136,7 @@ final class MovieQuizPresenter: UIViewController {
             self.questionFactory?.loadData()
             
         }
-        viewController?.alertErrorNetwork?.showErrorAlert(alertResult: model)
+        alertErrorNetwork?.showErrorAlert(alertResult: model)
     }
     
     func showAnswerResult(isCorrect: Bool) {
