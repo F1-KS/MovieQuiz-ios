@@ -16,12 +16,13 @@ final class MovieQuizPresenter: UIViewController {
     
     
     // MARK: -
+    
     private func didAnswer(isYes: Bool) {
         guard let currentQuestion = currentQuestion else {
             return
         }
         let givenAnswer = isYes
-        viewController?.showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
+        showAnswerResult(isCorrect: givenAnswer == currentQuestion.correctAnswer)
     }
     
     func yesButtonClicked() {
@@ -34,6 +35,11 @@ final class MovieQuizPresenter: UIViewController {
         viewController?.yesButton.isEnabled = false
         viewController?.noButton.isEnabled = false
         didAnswer(isYes: false)
+    }
+    
+    func onButtonClicked() {
+        viewController?.yesButton.isEnabled = true
+        viewController?.noButton.isEnabled = true
     }
     
     // MARK: -
@@ -56,8 +62,10 @@ final class MovieQuizPresenter: UIViewController {
         currentQuestionIndex == questionsAmount - 1
     }
     
-    func resetQuestionIndex() {
+    func restartGame() { // DRY заменяем повторения в коде
         currentQuestionIndex = 0
+        correctAnswers = 0
+        questionFactory?.requestNextQuestion()
     }
     
     func switchToNextQuestion() {
@@ -91,9 +99,7 @@ final class MovieQuizPresenter: UIViewController {
                 message: text,
                 buttonText: "Сыграть ещё раз",
                 completion: {
-                    self.resetQuestionIndex()
-                    self.correctAnswers = 0
-                    self.questionFactory?.requestNextQuestion()
+                    self.restartGame()
                 })
             alertPresenter?.showAlert(result: alertModel)
         } else {
@@ -103,6 +109,42 @@ final class MovieQuizPresenter: UIViewController {
             questionFactory?.requestNextQuestion()
         }
     } // end showNextQuestionOrResults
+    
+    // Показываем ошибку сети
+    func showNetworkError(message: String) {
+        viewController?.hideLoadingIndicator()
+        
+        let model = ErrorAlertModel(errorTitle: "Ошибка",
+                                    errorMessage: message,
+                                    errorButtonText: "Попробовать еще раз") { [weak self] in
+            guard let self = self else {return}
+            
+            self.restartGame()
+            self.questionFactory?.loadData()
+            
+        }
+        viewController?.alertErrorNetwork?.showErrorAlert(alertResult: model)
+    }
+    
+    func showAnswerResult(isCorrect: Bool) {
+        // это код, который будет показывать красную или зелёную рамку
+        // исходя из правильности ответа, то есть переменной `isCorrect`.
+        
+        if isCorrect {
+            correctAnswers += 1
+        }
+        // цвета из папки Helpers файле UIColor+Extensions
+        viewController?.imageView.layer.masksToBounds = true // даём разрешение на рисование рамки
+        viewController?.imageView.layer.borderWidth = 8 // толщина рамки
+        viewController?.imageView.layer.borderColor = isCorrect ? UIColor.ypGreen.cgColor : UIColor.ypRed.cgColor //если True то делаем рамку зеленой иначе красной
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { // запускаем задачу через 1 секунду
+            // код, который вы хотите вызвать через 1 секунду,
+            // в нашем случае это просто функция showNextQuestionOrResults()
+            self.onButtonClicked()
+            self.showNextQuestionOrResults()
+        }
+    }
     
 } // end MovieQuizPresenter
 
