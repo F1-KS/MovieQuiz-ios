@@ -3,25 +3,12 @@ import UIKit
 
 final class MovieQuizViewController: UIViewController {
     
-    
-    // MARK: - Делегейт
-    
-    func didReceiveNextQuestion(question: QuizQuestion?) {
-        presenter.didReceiveNextQuestion(question: question)
-    }
-    
     // MARK: - Жизненный цикл
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // при первом запуске приложения чтобы не было пустого экрана imageView (пока не отработает функция нажатии кнопок ДА или Нет), подключим стек и отобразим его
-        presenter.viewController = self
-        presenter.questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: presenter)
-        presenter.alertPresenter = AlertPresenter(controller: self)
-        presenter.alertErrorNetwork = AlertNetworkError(controller: self)
-        presenter.questionFactory?.loadData()
-        presenter.statisticService = StatisticServiceImplementation()
-        showLoadingIndicator()
+        
+        presenter = MovieQuizPresenter(viewController: self)
     }
     
     // MARK: - Привязка пользовательского интерфейса
@@ -45,7 +32,7 @@ final class MovieQuizViewController: UIViewController {
     
     // MARK: - Переменные и константы
     
-    private let presenter = MovieQuizPresenter()
+    private var presenter: MovieQuizPresenter!
     
     // MARK: - Функции
     
@@ -57,7 +44,7 @@ final class MovieQuizViewController: UIViewController {
         imageView.layer.borderColor = nil //корректный сброс цвета обводки imageView - вместо функции resetAnswerResult() {imageView.layer.borderColor = UIColor.clear.cgColor}
     }
     
-    private func showLoadingIndicator() {
+    func showLoadingIndicator() {
         activityIndicator.isHidden = false // говорим, что индикатор загрузки не скрыт
         activityIndicator.startAnimating() // включаем анимацию
     }

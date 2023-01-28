@@ -1,20 +1,31 @@
 import Foundation
 import UIKit
 
-final class MovieQuizPresenter: UIViewController, QuestionFactoryDelegate {
+final class MovieQuizPresenter: QuestionFactoryDelegate {
     
     //MARK: - Переменные - константы
     
     private var currentQuestionIndex: Int = 0
-    let questionsAmount: Int = 10
-    var currentQuestion: QuizQuestion?
-    weak var viewController: MovieQuizViewController?
-    var correctAnswers: Int = 0
-    var statisticService: StatisticService?
-    var questionFactory: QuestionFactoryProtocol?
-    var alertPresenter: AlertPresenterProtocol?
-    var alertErrorNetwork: AlertNetworkErrorProtocol?
+    private let questionsAmount: Int = 10
+    private var currentQuestion: QuizQuestion?
+    private weak var viewController: MovieQuizViewController?
+    private var correctAnswers: Int = 0
+    private let statisticService: StatisticService!
+    private var questionFactory: QuestionFactoryProtocol?
+    private var alertPresenter: AlertPresenterProtocol?
+    private var alertErrorNetwork: AlertNetworkErrorProtocol?
     
+    init(viewController: MovieQuizViewController) {
+        // при первом запуске приложения чтобы не было пустого экрана imageView (пока не отработает функция нажатии кнопок ДА или Нет), подключим стек и отобразим его
+        self.viewController = viewController
+        statisticService = StatisticServiceImplementation()
+        questionFactory = QuestionFactory(moviesLoader: MoviesLoader(), delegate: self)
+        questionFactory?.loadData()
+        viewController.showLoadingIndicator()
+        alertPresenter = AlertPresenter(controller: viewController)
+        alertErrorNetwork = AlertNetworkError(controller: viewController)
+        
+    }
     
     // MARK: -
     
@@ -56,6 +67,8 @@ final class MovieQuizPresenter: UIViewController, QuestionFactoryDelegate {
     func didFailToLoadData(with error: Error) {
         showNetworkError(message: error.localizedDescription) // возьмём в качестве сообщения описание ошибки
     }
+    
+    // MARK: - Делегейт
     
     func didReceiveNextQuestion(question: QuizQuestion?) {
         guard let question = question else {
